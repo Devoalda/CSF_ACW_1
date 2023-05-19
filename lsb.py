@@ -45,12 +45,13 @@ class img_steg:
         print("[+] Decoding...")
         image = cv2.imread(self.image_name)  # read image
         binary_data = ""
+        bit_to_hide = self.bit_to_hide - 1
         for row in image:
             for pixel in row:
                 r, g, b = self.to_bin(pixel)
-                binary_data += r[self.bit_to_hide]
-                binary_data += g[self.bit_to_hide]
-                binary_data += b[self.bit_to_hide]
+                binary_data += r[bit_to_hide]
+                binary_data += g[bit_to_hide]
+                binary_data += b[bit_to_hide]
         # Split by 8 bits
         all_bytes = [binary_data[i: i + 8] for i in range(0, len(binary_data), 8)]
         # Convert from bits to characters
@@ -77,7 +78,8 @@ class img_steg:
         print("[*] Encoding Data...")
 
         # Convert bit to hide position
-        bit_to_hide = 2 - self.bit_to_hide
+        # bit_to_hide = 2 - self.bit_to_hide
+        bit_to_hide = self.bit_to_hide - 1
         data_index = 0
         binary_secret_data = self.to_bin(secret_data)  # Convert data to binary
         data_len = len(binary_secret_data)  # size of data to hide
@@ -119,7 +121,7 @@ def main():
         image_name = input("Enter name of image to decode: ")
         bit_to_hide = int(input("Enter bit to hide (1-8): "))
         decoded_data = img_steg(image_name, bit_to_hide).decode()
-        print("Decoded Data:", decoded_data)
+        print("Decoded Data:", decoded_data) # Still returns special chars and ==== at the end
 
 
 if __name__ == "__main__":
