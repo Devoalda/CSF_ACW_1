@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decode</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        .drop-zone {
+            background-color: #f8f8f8;
+            border: 2px dashed #cccccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .drop-zone:hover {
+            border-color: #aaaaaa;
+        }
+
+        .drop-zone input {
+            display: none;
+        }
+
+        .drop-zone .upload-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone .upload-text {
+            font-size: 16px;
+            color: #888888;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-container input[type="file"],
+        .form-container input[type="submit"] {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+        }
+
+        .form-container input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <form action="/decoding" method="POST" enctype = "multipart/form-data">
+            <div class="drop-zone" id="dropZone">
+                <div class="upload-icon">&#8681;</div>
+                <div class="upload-text">Drag and drop an image here or click to browse</div>
+                <input type="file" name="encoded_file" id="fileInput">
+            </div>
+            <div style="width: 100%; text-align: center; padding: 10px 0px">
+                <input type="submit" value="Decode">
+            </div>
+        </form>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function () {
+        $('#dropZone').click(function (event) {
+            if (!$(event.target).is('#fileInput')) {
+                $("#fileInput").click()
+            }
+        });
+    });
+</script>
+
+</html>
