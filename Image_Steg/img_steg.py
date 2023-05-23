@@ -64,12 +64,13 @@ class img_steg:
         # Split by 8 bits
         all_bytes = [binary_data[i: i + 8] for i in range(0, len(binary_data), 8)]
         # Convert from bits to characters
-        decoded_data = self.from_bin(''.join(all_bytes))
-        if decoded_data.endswith(self.delimiter):
-            decoded_data = decoded_data[:-4]
+        decoded_data = ""
+        for byte in all_bytes:
+            decoded_data += chr(int(byte, 2))
+            if decoded_data[-len(self.delimiter):] == self.delimiter:
+                break
 
-        decoded_data = decoded_data.split(self.delimiter)[0]
-        return decoded_data
+        return decoded_data[:-len(self.delimiter)]
 
     def encode(self, secret_data: str = "Hello World") -> np.ndarray:
         """
