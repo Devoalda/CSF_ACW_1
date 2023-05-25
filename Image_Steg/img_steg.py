@@ -136,22 +136,24 @@ def main():
     secret_data = ""
     with open("../Txt_Steg/test.txt", "r") as f:
         secret_data = f.read()
-    bit_to_hide = [1, 2, 3, 4, 5, 6]
+
+    # Generate random bit positions to hide data into image for testing
+    bit_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
+    bit_to_hide = list(bit_to_hide)
+    bit_to_hide.sort()
+    print(f"Bits to hide: {bit_to_hide}")
 
     print("Welcome to Image Steganography")
-    print("1. Encode\n2. Decode\n3. Exit")
-    choice = int(input("Enter your choice: "))
 
-    if choice == 1:
-        encoded_image = img_steg(image_name=image_name, bit_to_hide=bit_to_hide).encode(secret_data)
-        extension = image_name.split(".")[-1]
-        cv2.imwrite("encoded_image." + extension, encoded_image)
-        print("Image Encoded Successfully")
-    elif choice == 2:
-        decoded_data = img_steg(image_name=image_name, bit_to_hide=bit_to_hide).decode()
-        print("Decoded Data:", decoded_data)
-    else:
-        exit(0)
+    # Encode the data into the image
+    encoded_image = img_steg(image_name=image_name, bit_to_hide=bit_to_hide).encode(secret_data)
+    extension = image_name.split(".")[-1]
+    cv2.imwrite("encoded_image." + extension, encoded_image)
+    print("Image Encoded Successfully")
+
+    # Decode the data from the image
+    decoded_data = img_steg(image_name=encoded_image_name, bit_to_hide=bit_to_hide).decode()
+    print("Decoded Data:", decoded_data)
 
 
 if __name__ == "__main__":
