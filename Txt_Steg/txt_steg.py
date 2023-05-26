@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class txt_steg:
     def __init__(self, text_file: str = "text.txt", bit_to_hide: list[int] = None):
         """
@@ -7,11 +8,11 @@ class txt_steg:
         :param text_file: PathName of the text file to encode or decode
         :type text_file: str
         :param bit_to_hide: Bit to hide the data in (1 - LSB to 8 - MSB)
-        :type bit_to_hide: int
+        :type bit_to_hide: list[int]
         """
-        self.text_file = text_file
-        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide]
-        self.delimiter = "abc-123=="
+        self.text_file = text_file  # PathName of the text file
+        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [1]  # Default is LSB
+        self.delimiter = "abc-123=="  # Delimiter to indicate the end of the secret data
 
     def encode(self, secret_data: str = "Hello World"):
         """
@@ -20,7 +21,7 @@ class txt_steg:
         :type secret_data: str
         """
         print("[+] Encoding...")
-        # Read text file and covert to binary
+        # Read text file
         if self.text_file != "":
             with open(self.text_file, "r") as f:
                 data = f.read()
@@ -37,27 +38,28 @@ class txt_steg:
             raise ValueError(
                 f"[-] Error: Binary Secret data length {len(secret_data)} is greater than data length {n_bytes}")
 
-        bits_to_hide = self.bit_to_hide
         data_index = 0
         # Convert secret data to binary
         binary_secret_data = self.to_bin(secret_data)
 
         encoded_data = ""
 
-        # Encode data into text file
+        print(f"[+] Starting encoding...")
+        # Encode data into text
         for byte in data:
             byte = self.to_bin(byte)
             byte = "0" * (8 - len(byte)) + byte
             if data_index >= len(binary_secret_data):
-                encoded_data += byte
+                encoded_data += self.from_bin(''.join(byte))
             else:
-                for bit_pos in bits_to_hide:
+                for bit_pos in self.bit_to_hide:
                     if data_index < len(binary_secret_data):
                         byte = list(byte)
                         byte[bit_pos] = binary_secret_data[data_index]
                         data_index += 1
                 encoded_data += self.from_bin(''.join(byte))
 
+        print(f"[+] Encoded Successfully!")
         return encoded_data
 
     def decode(self) -> str:
@@ -76,14 +78,14 @@ class txt_steg:
             raise FileNotFoundError("File not found")
 
         binary_data = ""
-        bit_to_hide = self.bit_to_hide
-
+        print(f"[+] Gathering data from bit positions: {self.bit_to_hide}")
         for byte in data:
             byte = self.to_bin(byte)
             byte = "0" * (8 - len(byte)) + byte
-            for bit_pos in bit_to_hide:
+            for bit_pos in self.bit_to_hide:
                 binary_data += byte[bit_pos]
 
+        print(f"[+] Converting binary data to text...")
         all_bytes = [binary_data[i:i + 8] for i in range(0, len(binary_data), 8)]
 
         decoded_data = ""
@@ -92,6 +94,7 @@ class txt_steg:
             if decoded_data[-len(self.delimiter):] == self.delimiter:
                 break
 
+        print(f"[+] Decoded Successfully!")
         return decoded_data[:-len(self.delimiter)]
 
     def to_bin(self, data: str) -> str | list[str]:
@@ -125,9 +128,8 @@ class txt_steg:
 def main():
     print("Welcome to Text Steganography")
     text_file_name = "test.txt"
-    secret_data = "vulputate. In tincidunt arcu risus, eu lacinia metus viverra in. Maecenas id ipsum tortor. Nunc vita" \
-                  " e mauris vel turpis lobortis tincidunt sed sit amet purus. Aliquam sed pharetra neque. Sed eget nis" \
-                  "i id metus aliquam dapibus et nec felis. Cras quis ante rutrum, bibendum lacus ut, malesuada justo. "
+    with open("../Txt_Steg/secret_data.txt", "r") as f:
+        secret_data = f.read()
 
     # Create a unique random number list from 1-8, spanning anywhere from 1-8 bits, for testing purposes
     bits_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
@@ -137,12 +139,12 @@ def main():
 
     # Encode
     encoded_file_name = "encoded_text.txt"
-    encoded_data = txt_steg(text_file_name, bits_to_hide).encode(secret_data)
+    encoded_data = txt_steg(text_file=text_file_name, bit_to_hide=bits_to_hide).encode(secret_data)
     with open(f"{encoded_file_name}", "w") as f:
         f.write(encoded_data)
 
     # Decode
-    decoded_data = txt_steg(encoded_file_name, bits_to_hide).decode()
+    decoded_data = txt_steg(text_file=encoded_file_name, bit_to_hide=bits_to_hide).decode()
     print(decoded_data)
 
 

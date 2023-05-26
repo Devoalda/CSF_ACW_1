@@ -3,7 +3,7 @@ import numpy as np
 
 
 class img_steg:
-    def __init__(self, image_name: str = "image.png", bit_to_hide: list[int] = None):
+    def __init__(self, image_name: str = "image.png", bit_to_hide: list[int] = None) -> None:
         """
         Initialize the class
         :param image_name:  Name of the image to encode or decode
@@ -12,8 +12,8 @@ class img_steg:
         :type bit_to_hide: list[int]
         """
         self.image_name = image_name
-        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide]
-        self.delimiter = "====="
+        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [1]  # Default is LSB
+        self.delimiter = "abc-123-a=="
 
     def encode(self, secret_data: str = "Hello World") -> np.ndarray:
         """
@@ -36,6 +36,10 @@ class img_steg:
         data_index = 0
         binary_secret_data = self.to_bin(secret_data)  # Convert data to binary
         data_len = len(binary_secret_data)  # size of data to hide
+
+        print(f"[+] Size of data to hide: {data_len}")
+        print("[+] Starting encoding...")
+
         for row in image:
             for pixel in row:
                 r, g, b = self.to_bin(pixel)  # Convert RGB Values to binary format
@@ -60,13 +64,15 @@ class img_steg:
                         data_index += 1
                     if data_index >= data_len:
                         break
-
                 pixel[0] = int(''.join(r), 2)  # convert modified binary back to integer for red pixel
                 pixel[1] = int(''.join(g), 2)  # convert modified binary back to integer for green pixel
                 pixel[2] = int(''.join(b), 2)  # convert modified binary back to integer for blue pixel
 
                 if data_index >= data_len:
                     break
+
+        print(f"[+] Encoding completed")
+
         return image
 
     def decode(self) -> str:
@@ -79,6 +85,8 @@ class img_steg:
         image = cv2.imread(self.image_name)  # read image
         binary_data = ""
         bit_to_hide = self.bit_to_hide
+
+        print(f"[+] Extracting data from image...")
         for row in image:
             for pixel in row:
                 r, g, b = self.to_bin(pixel)
@@ -86,6 +94,9 @@ class img_steg:
                     binary_data += r[bit_pos]  # retrieve data from specified bit position of red pixel
                     binary_data += g[bit_pos]  # retrieve data from specified bit position of green pixel
                     binary_data += b[bit_pos]  # retrieve data from specified bit position of blue pixel
+
+        print(f"[+] Forming binary data completed")
+        print(f"[+] Decoding binary data...")
 
         # Split by 8 bits
         all_bytes = [binary_data[i: i + 8] for i in range(0, len(binary_data), 8)]
@@ -96,6 +107,7 @@ class img_steg:
             if decoded_data[-len(self.delimiter):] == self.delimiter:
                 break
 
+        print(f"[+] Decoding completed")
         return decoded_data[:-len(self.delimiter)]
 
     def to_bin(self, data: str) -> str | list[str]:
@@ -134,11 +146,12 @@ def main():
     image_name = "pokemon.png"
     encoded_image_name = "encoded_image.png"
     secret_data = ""
-    with open("../Txt_Steg/test.txt", "r") as f:
+    with open("../Txt_Steg/secret_data.txt", "r") as f:
         secret_data = f.read()
 
     # Generate random bit positions to hide data into image for testing
     bit_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
+    # bit_to_hide = [1, 2]
     bit_to_hide = list(bit_to_hide)
     bit_to_hide.sort()
     print(f"Bits to hide: {bit_to_hide}")
@@ -147,9 +160,7 @@ def main():
 
     # Encode the data into the image
     encoded_image = img_steg(image_name=image_name, bit_to_hide=bit_to_hide).encode(secret_data)
-    extension = image_name.split(".")[-1]
-    cv2.imwrite("encoded_image." + extension, encoded_image)
-    print("Image Encoded Successfully")
+    cv2.imwrite(encoded_image_name, encoded_image)
 
     # Decode the data from the image
     decoded_data = img_steg(image_name=encoded_image_name, bit_to_hide=bit_to_hide).decode()
