@@ -14,7 +14,7 @@ class txt_steg:
         self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [1]  # Default is LSB
         self.delimiter = "abc-123=="  # Delimiter to indicate the end of the secret data
 
-    def encode(self, secret_data: str = "Hello World"):
+    def encode(self, secret_data: str = "Hello World") -> str:
         """
         Encode the secret data into the text file
         :param secret_data: String
