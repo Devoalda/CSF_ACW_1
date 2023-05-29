@@ -143,15 +143,14 @@ class img_steg:
 
 def main():
     # Variables
-    image_name = "pokemon.png"
-    encoded_image_name = "encoded_image.png"
+    image_name = "test.bmp"
+    encoded_image_name = "encoded_image.bmp"
     secret_data = ""
     with open("../Txt_Steg/secret_data.txt", "r") as f:
         secret_data = f.read()
 
     # Generate random bit positions to hide data into image for testing
     bit_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
-    # bit_to_hide = [1, 2]
     bit_to_hide = list(bit_to_hide)
     bit_to_hide.sort()
     print(f"Bits to hide: {bit_to_hide}")
