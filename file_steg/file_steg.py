@@ -1,44 +1,53 @@
 import numpy as np
-from pprint import pprint
 
 
-class mp3_steg:
-    def __init__(self, mp3_file: str = "audio.mp3", bits_to_hide: list[int] = None) -> None:
+class file_steg:
+    def __init__(self, file: str = None, bit_positions: list[int] = None) -> None:
         """
         Initialize the class
-        :param mp3_file: PathName of the mp3 file to encode or decode
-        :type mp3_file: str
-        :param bits_to_hide: Bit to hide the data in (1 - LSB to 8 - MSB)
-        :type bits_to_hide: list[int]
+        :param file: Path to the file to encode or decode
+        :type file: str
+        :param bit_positions: Bit to hide the data in (1 - LSB to 8 - MSB)
+        :type bit_positions: list[int]
         """
-        self.mp3_file = mp3_file
-        self.bits_to_hide = [8 - bit_pos for bit_pos in bits_to_hide] if bits_to_hide else [1]  # Default is LSB
-        self.delimiter = "====="  # Delimiter to indicate the end of the secret data
+        self.supported_extensions = [
+            "mp3",
+            "mp4",
+            "docx",
+            "xlsx",
+            "pptx"
+        ]
+        if file is None:
+            raise ValueError(f"[-] Error: File path is required")
+        if file.split(".")[-1] not in self.supported_extensions:
+            raise ValueError(f"[-] Error: File extension {file.split('.')[-1]} is not supported")
 
-    def encode(self, secret_data: str = "Hello World") -> bytes:
+        self.file = file
+        self.bits_to_hide = [8 - bit_pos for bit_pos in bit_positions] if bit_positions else [1]  # Default is LSB
+        self.delimiter = "LZu30,#"  # Delimiter to indicate the end of the secret data
+
+    def encode(self, secret_data_str: str = "Hello World") -> bytes:
         """
         Encode the secret data into the mp3 file
 
-        :param secret_data: String of data to hide
+        :param secret_data_str: String of data to hide
 
         :return: Encoded mp3 file as bytes
         :rtype: bytes
         """
 
-        with open(self.mp3_file, "rb") as f:
+        with open(self.file, "rb") as f:
             data = f.read()
 
         # Max Bytes to encode
-        n_bytes = len(data) // 8
+        n_bytes = len(data) >> 3
 
-        # Check if secret data can be encoded into mp3 file
-        # print(f"Secret data length: {len(secret_data)}, Max data length: {n_bytes}")
-        if len(secret_data) > n_bytes:
+        if len(secret_data_str) > n_bytes:
             raise ValueError(
-                f"[-] Error: Binary Secret data length {len(secret_data)} is greater than data length {n_bytes}")
+                f"[-] Error: Binary Secret data length {len(secret_data_str)} is greater than data length {n_bytes}")
 
         # Convert secret data to binary
-        binary_secret_data = self.to_bin(secret_data)
+        binary_secret_data = self.to_bin(secret_data_str)
 
         # Add delimiter
         binary_secret_data += self.to_bin(self.delimiter)
@@ -47,7 +56,6 @@ class mp3_steg:
         encoded_data = bytearray()
 
         print(f"[+] Starting encoding...")
-        # Encode data into mp3
         for byte in data:
             if data_index >= len(binary_secret_data):
                 encoded_data.append(byte)
@@ -71,7 +79,7 @@ class mp3_steg:
         :return: Decoded secret data
         :rtype: str
         """
-        with open(self.mp3_file, "rb") as f:
+        with open(self.file, "rb") as f:
             data = f.read()
 
         binary_data = ""
@@ -114,16 +122,6 @@ class mp3_steg:
         else:
             raise TypeError("Type not supported")
 
-    def from_bin(self, data: str) -> str:
-        """
-        Convert binary `data` back to the original format
-        :param data: String
-        :type data: str
-        :return: Original Data: String
-        """
-
-        return ''.join([chr(int(data[i:i + 8], 2)) for i in range(0, len(data), 8)])
-
 
 if __name__ == "__main__":
     with open("../Txt_Steg/secret_data.txt", "r") as f:
@@ -132,23 +130,24 @@ if __name__ == "__main__":
     bits_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
     bits_to_hide = list(bits_to_hide)
     bits_to_hide.sort()
-    # bits_to_hide = [1]
     print(f"Bits to hide: {bits_to_hide}")
 
     mp3_file = "audio.mp3"
     mp4_file = "video.mp4"
-    output_file_mp3 = "encoded_video.mp3"
+    docx_file = "test.docx"
+    output_file_mp3 = "encoded_audio.mp3"
     output_file_mp4 = "encoded_video.mp4"
+    output_docx_file = "encoded_test.docx"
 
     # Encode data, get as bytes
-    encoded_data = mp3_steg(mp3_file=mp3_file, bits_to_hide=bits_to_hide).encode(secret_data=secret_data)
+    encoded_data = file_steg(file=mp3_file, bit_positions=bits_to_hide).encode(secret_data_str=secret_data)
 
     # Write encoded data to file
     with open(output_file_mp3, "wb") as f:
         f.write(encoded_data)
 
     # Decode data from mp3 file
-    decoded_data = mp3_steg(mp3_file=output_file_mp3, bits_to_hide=bits_to_hide).decode()
+    decoded_data = file_steg(file=output_file_mp3, bit_positions=bits_to_hide).decode()
 
     # Print the decoded data
     print("[+] Decoded data:", decoded_data)
