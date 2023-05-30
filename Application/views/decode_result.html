@@ -43,7 +43,24 @@
                 $("body").append(html_content)
             }
             else if(response.hasOwnProperty("txt")){
-                console.log(response)
+                fetch("upload/" + response["txt"])
+                    .then(res => res.text())
+                    .then(data => {
+                        var html_content = `<section>
+                            <div>
+                                <h1>Decoded</h1>
+                                <textarea>` + data + `</textarea>
+                            </div>
+                            <div>
+                                <h1>Secret Text:</h1>
+                                <p>` + response["payload"] + `</p>
+                            </div>
+                        </section>`
+                        $("body").append(html_content)
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             }
         });
     })

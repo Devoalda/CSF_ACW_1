@@ -49,7 +49,33 @@
                 $("body").append(html_content)
             }
             else if(response.hasOwnProperty("txt")){
-                console.log(response)
+                
+                fetch("upload/" + response["txt"])
+                    .then(res => res.text())
+                    .then(data => {
+                        fetch("upload/" + response["txt2"])
+                        .then(res2 => res2.text())
+                        .then(data2 => {
+                            var html_content = `<section style="display: flex; justify-content: flex-start;">
+                                <div>
+                                    <h1>Original</h1>
+                                    <textarea>` + data + `</textarea>
+                                </div>
+                                <div>
+                                    <h1>Encoded</h1>
+                                    <textarea>` + data2 + `</textarea>
+                                </div>
+
+                            </section>`
+                            $("body").append(html_content)
+                        })
+                        .catch(error2 => {
+                            console.error('Error:', error2);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             }
         });
     })

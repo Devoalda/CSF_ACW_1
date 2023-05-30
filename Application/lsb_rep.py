@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, send_from_directory
-from lib.steganography import img_steg, wav_steg
+from lib.steganography import img_steg, wav_steg, txt_steg
 import cv2
 import os
 import sys
@@ -53,6 +53,12 @@ def encoding():
             new_wav_file.close()
             session['wav'] = file.filename
             session['wav2'] = "encoded_" + file.filename
+        elif file_extension == ".txt":
+            encoded_data = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+            with open(os.path.join(WORKING_PATH, "encoded_" + file.filename), "w") as f:
+                f.write(encoded_data)
+            session['txt'] = file.filename
+            session['txt2'] = "encoded_" + file.filename
 
         return redirect("/encode_result")
 
@@ -84,8 +90,12 @@ def decoding():
             payload = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).decode()
             session["payload"] = payload
             session["wav"] = file.filename
+        elif file_extension == ".txt":
+            payload = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).decode()
+            session["payload"] = payload
+            session["txt"] = file.filename
 
-        return redirect("/decode_result")
+    return redirect("/decode_result")
 
 @app.route('/decode_result')
 def decode_result():
