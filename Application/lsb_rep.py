@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, session, send_from_directory
-from lib.steganography import img_steg, wav_steg, txt_steg
+from lib.steganography import img_steg, wav_steg, txt_steg, file_steg
 import cv2
 import os
 import sys
 import wave
+import warnings
 
+MAX_SESSION_SIZE = 4093
 WORKING_PATH = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "upload") + os.sep
 
 app = Flask(__name__, template_folder='views')
@@ -30,39 +32,48 @@ def encoding():
     try:
         file = request.files['origin']
         b2c = [int(x) for x in request.form.getlist("b2c")]
-        # b2c = [int(request.form['b2c'])]
         payload = request.form['payload']
 
         if file.filename != "":
             file.save(WORKING_PATH + file.filename)
 
-            file_extension = os.path.splitext(file.filename)[1]
-            if file_extension == ".png" or file_extension == ".bmp":
-                steg = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
-                cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, steg)
+            file_extension = os.path.splitext(file.filename)[1][1:]
+            if file_extension == "png" or file_extension == "bmp":
+                encode = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+                cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, encode)
                 session['image'] = file.filename
                 session['image2'] = "encoded_" + file.filename
-            elif file_extension == ".wav":
-                steg = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+            elif file_extension == "wav":
+                encode = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).encode(payload)
 
                 # Write encoded data to file
                 new_wav_file = wave.open(WORKING_PATH + "encoded_" + file.filename, "wb")
-                new_wav_file.setnchannels(steg["num_channels"])
-                new_wav_file.setsampwidth(steg["sample_width"])
-                new_wav_file.setframerate(steg["frame_rate"])
-                new_wav_file.writeframes(steg["num_frames"])
+                new_wav_file.setnchannels(encode["num_channels"])
+                new_wav_file.setsampwidth(encode["sample_width"])
+                new_wav_file.setframerate(encode["frame_rate"])
+                new_wav_file.writeframes(encode["num_frames"])
                 new_wav_file.close()
                 session['wav'] = file.filename
                 session['wav2'] = "encoded_" + file.filename
-            elif file_extension == ".txt":
+            elif file_extension == "txt":
                 encoded_data = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).encode(payload)
                 with open(os.path.join(WORKING_PATH, "encoded_" + file.filename), "w") as f:
                     f.write(encoded_data)
                 session['txt'] = file.filename
                 session['txt2'] = "encoded_" + file.filename
+            elif file_extension == "mp3" or file_extension == "mp4":
+                encoded_data = file_steg.file_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+                with open(os.path.join(WORKING_PATH, "encoded_" + file.filename), "wb") as f:
+                    f.write(encoded_data)
+                session[file_extension] = file.filename
+                session[file_extension + '_2'] = "encoded_" + file.filename
 
-            return redirect("/encode_result")
-    except:
+        return redirect("/encode_result")
+    except Exception as exception:
+        print("ENCODE(Exception):", exception)
+        return redirect("/unsupported")
+    except UserWarning as warning:
+        print("ENCODE(warning):", warning)
         return redirect("/unsupported")
 
 @app.route('/encode_result')
@@ -79,28 +90,47 @@ def decode():
 
 @app.route("/decoding", methods=['POST'])
 def decoding():
+
+    def decode_files(class_name, _path, b2c, ext):
+        class_name_str = class_name.__name__.split(".")[-1]
+        method = getattr(class_name, class_name_str)
+        payload = method(_path, b2c).decode()
+
+        if class_name_str == "img_steg":
+            session["image"] = file.filename
+        else:
+            session[ext] = file.filename
+
+        if sys.getsizeof(payload) <= MAX_SESSION_SIZE:
+            session["payload"] = payload
+        else:
+            raise Exception("Payload too big")
+
     try:
         file = request.files['encoded_file']
         b2c = [int(x) for x in request.form.getlist("b2c")]
         if file.filename != "":
-            file.save(WORKING_PATH + file.filename)
 
-            file_extension = os.path.splitext(file.filename)[1]
-            if file_extension == ".png" or file_extension == ".bmp":
-                payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
-                session["payload"] = payload
-                session["image"] = file.filename
-            elif file_extension == ".wav":
-                payload = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).decode()
-                session["payload"] = payload
-                session["wav"] = file.filename
-            elif file_extension == ".txt":
-                payload = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).decode()
-                session["payload"] = payload
-                session["txt"] = file.filename
+            _path = WORKING_PATH + file.filename
+
+            file.save(_path)
+
+            file_extension = os.path.splitext(file.filename)[1][1:]
+            if file_extension == "png" or file_extension == "bmp":
+                decode_files(img_steg, _path, b2c, file_extension)
+            elif file_extension == "wav":
+                decode_files(wav_steg, _path, b2c, file_extension)
+            elif file_extension == "txt":
+                decode_files(txt_steg, _path, b2c, file_extension)
+            elif file_extension == "mp3" or file_extension == "mp4":
+                decode_files(file_steg, _path, b2c, file_extension)
 
         return redirect("/decode_result")
-    except:
+    except Exception as exception:
+        print("DECODE(Exception):", exception)
+        return redirect("/unsupported")
+    except UserWarning as warning:
+        print("DECODE(warning):", warning)
         return redirect("/unsupported")
 
 @app.route('/decode_result')

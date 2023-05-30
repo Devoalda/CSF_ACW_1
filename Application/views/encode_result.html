@@ -26,8 +26,8 @@
     $(document).ready(function(){
 
         $.get('/get_session', function(response) {
+            console.log(response)
             if(response.hasOwnProperty("image")){
-                console.log(response)
                 var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
                     <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
                         <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
@@ -56,6 +56,42 @@
                         <source src="upload/` + response["wav2"] + `" type="audio/wav">
                         Your browser does not support the audio element.
                     </audio>
+                </div>
+                </section>`
+                $("body").append(html_content)
+            }
+            else if(response.hasOwnProperty("mp3")){
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
+                    <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
+                    <audio controls>
+                        <source src="upload/` + response["mp3"] + `" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Encoded</h1>
+                    <audio controls>
+                        <source src="upload/` + response["mp3_2"] + `" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                </section>`
+                $("body").append(html_content)
+            }
+            else if(response.hasOwnProperty("mp4")){
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
+                    <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
+                    <video style="width: 100%" src="upload/` + response["mp4"] + `" controls autoplay>
+                        Sorry, your browser doesn't support embedded videos.
+                    </video>
+                </div>
+                <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Encoded</h1>
+                    <video style="width: 100%" src="upload/` + response["mp4_2"] + `" controls autoplay>
+                        Sorry, your browser doesn't support embedded videos.
+                    </video>
                 </div>
                 </section>`
                 $("body").append(html_content)
