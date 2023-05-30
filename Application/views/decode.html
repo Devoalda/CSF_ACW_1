@@ -55,6 +55,10 @@
             color: white;
             cursor: pointer;
         }
+        table{
+            width: 400px;
+            margin: 10px auto;
+        }
     </style>
 </head>
 
@@ -66,20 +70,33 @@
                 <div class="upload-text">Drag and drop an image here or click to browse</div>
                 <input type="file" name="encoded_file" id="fileInput">
             </div>
-            <label for="b2c">Bits to Change:</label>
-            <div>
-                <input type="checkbox" name="b2c" value="8" placeholder="8">
-                <input type="checkbox" name="b2c" value="7" placeholder="7">
-                <input type="checkbox" name="b2c" value="6" placeholder="6">
-                <input type="checkbox" name="b2c" value="5" placeholder="5">
-                <input type="checkbox" name="b2c" value="4" placeholder="4">
-                <input type="checkbox" name="b2c" value="3" placeholder="3">
-                <input type="checkbox" name="b2c" value="2" placeholder="2">
-                <input type="checkbox" name="b2c" value="1" placeholder="1">
-            </div>
             <div style="width: 100%; text-align: center; padding: 10px 0px">
+                <label for="b2c">Bits to Change:</label>
+                <table>
+                    <tr>
+                        <th>8</th>
+                        <th>7</th>
+                        <th>6</th>
+                        <th>5</th>
+                        <th>4</th>
+                        <th>3</th>
+                        <th>2</th>
+                        <th>1</th>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" name="b2c" value="8" placeholder="8"></td>
+                        <td><input type="checkbox" name="b2c" value="7" placeholder="7"></td>
+                        <td><input type="checkbox" name="b2c" value="6" placeholder="6"></td>
+                        <td><input type="checkbox" name="b2c" value="5" placeholder="5"></td>
+                        <td><input type="checkbox" name="b2c" value="4" placeholder="4"></td>
+                        <td><input type="checkbox" name="b2c" value="3" placeholder="3"></td>
+                        <td><input type="checkbox" name="b2c" value="2" placeholder="2"></td>
+                        <td><input type="checkbox" name="b2c" value="1" placeholder="1"></td>
+                    </tr>
+                </table>
                 <input type="submit" value="Decode">
             </div>
+
         </form>
     </div>
 </body>

@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, session, send_from_directory
-from lib.steganography import img_steg
+from lib.steganography import img_steg, wav_steg
 import cv2
 import os
 import sys
+import wave
 
 WORKING_PATH = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "upload") + os.sep
 
@@ -33,16 +34,32 @@ def encoding():
 
     if file.filename != "":
         file.save(WORKING_PATH + file.filename)
-        steg = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
-        cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, steg)
-        session['image'] = file.filename
-        session['image2'] = "encoded_" + file.filename
+
+        file_extension = os.path.splitext(file.filename)[1]
+        if file_extension == ".png" or file_extension == ".bmp":
+            steg = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+            cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, steg)
+            session['image'] = file.filename
+            session['image2'] = "encoded_" + file.filename
+        elif file_extension == ".wav":
+            steg = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+
+            # Write encoded data to file
+            new_wav_file = wave.open(WORKING_PATH + "encoded_" + file.filename, "wb")
+            new_wav_file.setnchannels(steg["num_channels"])
+            new_wav_file.setsampwidth(steg["sample_width"])
+            new_wav_file.setframerate(steg["frame_rate"])
+            new_wav_file.writeframes(steg["num_frames"])
+            new_wav_file.close()
+            session['wav'] = file.filename
+            session['wav2'] = "encoded_" + file.filename
+
         return redirect("/encode_result")
 
 @app.route('/encode_result')
 def encode_result():
     if len(session) > 0:
-        return render_template("encode_result.html", image=session.get("image"), image2=session.get('image2'))
+        return render_template("encode_result.html")
     else:
         return redirect("/encode")
  
@@ -57,17 +74,31 @@ def decoding():
     b2c = [int(x) for x in request.form.getlist("b2c")]
     if file.filename != "":
         file.save(WORKING_PATH + file.filename)
-        payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
-        session["payload"] = payload
-        session["image"] = file.filename
+
+        file_extension = os.path.splitext(file.filename)[1]
+        if file_extension == ".png" or file_extension == ".bmp":
+            payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
+            session["payload"] = payload
+            session["image"] = file.filename
+        elif file_extension == ".wav":
+            payload = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).decode()
+            session["payload"] = payload
+            session["wav"] = file.filename
+
         return redirect("/decode_result")
 
 @app.route('/decode_result')
 def decode_result():
     if len(session) > 0:
-        return render_template("decode_result.html", payload=session.get("payload"), image=session.get("image"))
+        return render_template("decode_result.html")
     else:
         return redirect("/decode")
+
+@app.route('/get_session')
+def get_session():
+    session_data = dict(session)
+    return session_data
+
 
 @app.route('/upload/<path:filename>')
 def upload(filename):

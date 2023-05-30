@@ -4,22 +4,55 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>RESULT</title>
 </head>
 <body>
-    
-    <section style="display: flex; justify-content: flex-start;">
-
-        <div>
-            <h1>Original</h1>
-            <img src="{{ url_for('upload', filename=image2) }}" alt="Image Not Found">
-        </div>
-        <div>
-            <h1>Encoded</h1>
-            <img src="{{ url_for('upload', filename=image2) }}" alt="Image Not Found">
-        </div>
-
-    </section>
-
 </body>
+<script>
+
+    $(document).ready(function(){
+
+        $.get('/get_session', function(response) {
+            if(response.hasOwnProperty("image")){
+                console.log(response)
+                var html_content = `<section style="display: flex; justify-content: flex-start;">
+                    <div>
+                        <h1>Original</h1>
+                        <img src="upload/` + response["image"] + `" alt="Image Not Found">
+                    </div>
+                    <div>
+                        <h1>Encoded</h1>
+                        <img src="upload/` + response["image2"] + `" alt="Image Not Found">
+                    </div>
+
+                </section>`
+                $("body").append(html_content)
+            }
+            else if(response.hasOwnProperty("wav")){
+                var html_content = `<section style="display: flex; justify-content: flex-start;">
+                <div>
+                    <h1>Original</h1>
+                    <audio controls>
+                        <source src="upload/` + response["wav"] + `" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div>
+                    <h1>Encoded</h1>
+                    <audio controls>
+                        <source src="upload/` + response["wav2"] + `" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                </section>`
+                $("body").append(html_content)
+            }
+            else if(response.hasOwnProperty("txt")){
+                console.log(response)
+            }
+        });
+    })
+
+</script>
 </html>
