@@ -55,8 +55,6 @@ def decode():
 def decoding():
     file = request.files['encoded_file']
     b2c = [int(x) for x in request.form.getlist("b2c")]
-    # b2c = [int(request.form['b2c'])]
-    print(b2c)
     if file.filename != "":
         file.save(WORKING_PATH + file.filename)
         payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
