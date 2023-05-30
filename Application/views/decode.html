@@ -8,6 +8,11 @@
     <title>Decode</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
         .drop-zone {
             background-color: #f8f8f8;
             border: 2px dashed #cccccc;
@@ -55,7 +60,8 @@
             color: white;
             cursor: pointer;
         }
-        table{
+
+        table {
             width: 400px;
             margin: 10px auto;
         }
@@ -63,8 +69,10 @@
 </head>
 
 <body>
+    <a style="text-decoration: none; color: white; display: inline-block; padding: 14px 16px; background-color: gray;" href="/">< Back</a>
+
     <div class="form-container">
-        <form action="/decoding" method="POST" enctype = "multipart/form-data">
+        <form action="/decoding" method="POST" enctype="multipart/form-data">
             <div class="drop-zone" id="dropZone">
                 <div class="upload-icon">&#8681;</div>
                 <div class="upload-text">Drag and drop an image here or click to browse</div>

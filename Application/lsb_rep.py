@@ -27,40 +27,43 @@ def encode():
 
 @app.route("/encoding", methods=['POST'])
 def encoding():
-    file = request.files['origin']
-    b2c = [int(x) for x in request.form.getlist("b2c")]
-    # b2c = [int(request.form['b2c'])]
-    payload = request.form['payload']
+    try:
+        file = request.files['origin']
+        b2c = [int(x) for x in request.form.getlist("b2c")]
+        # b2c = [int(request.form['b2c'])]
+        payload = request.form['payload']
 
-    if file.filename != "":
-        file.save(WORKING_PATH + file.filename)
+        if file.filename != "":
+            file.save(WORKING_PATH + file.filename)
 
-        file_extension = os.path.splitext(file.filename)[1]
-        if file_extension == ".png" or file_extension == ".bmp":
-            steg = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
-            cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, steg)
-            session['image'] = file.filename
-            session['image2'] = "encoded_" + file.filename
-        elif file_extension == ".wav":
-            steg = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+            file_extension = os.path.splitext(file.filename)[1]
+            if file_extension == ".png" or file_extension == ".bmp":
+                steg = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+                cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, steg)
+                session['image'] = file.filename
+                session['image2'] = "encoded_" + file.filename
+            elif file_extension == ".wav":
+                steg = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).encode(payload)
 
-            # Write encoded data to file
-            new_wav_file = wave.open(WORKING_PATH + "encoded_" + file.filename, "wb")
-            new_wav_file.setnchannels(steg["num_channels"])
-            new_wav_file.setsampwidth(steg["sample_width"])
-            new_wav_file.setframerate(steg["frame_rate"])
-            new_wav_file.writeframes(steg["num_frames"])
-            new_wav_file.close()
-            session['wav'] = file.filename
-            session['wav2'] = "encoded_" + file.filename
-        elif file_extension == ".txt":
-            encoded_data = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).encode(payload)
-            with open(os.path.join(WORKING_PATH, "encoded_" + file.filename), "w") as f:
-                f.write(encoded_data)
-            session['txt'] = file.filename
-            session['txt2'] = "encoded_" + file.filename
+                # Write encoded data to file
+                new_wav_file = wave.open(WORKING_PATH + "encoded_" + file.filename, "wb")
+                new_wav_file.setnchannels(steg["num_channels"])
+                new_wav_file.setsampwidth(steg["sample_width"])
+                new_wav_file.setframerate(steg["frame_rate"])
+                new_wav_file.writeframes(steg["num_frames"])
+                new_wav_file.close()
+                session['wav'] = file.filename
+                session['wav2'] = "encoded_" + file.filename
+            elif file_extension == ".txt":
+                encoded_data = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).encode(payload)
+                with open(os.path.join(WORKING_PATH, "encoded_" + file.filename), "w") as f:
+                    f.write(encoded_data)
+                session['txt'] = file.filename
+                session['txt2'] = "encoded_" + file.filename
 
-        return redirect("/encode_result")
+            return redirect("/encode_result")
+    except:
+        return redirect("/unsupported")
 
 @app.route('/encode_result')
 def encode_result():
@@ -76,26 +79,29 @@ def decode():
 
 @app.route("/decoding", methods=['POST'])
 def decoding():
-    file = request.files['encoded_file']
-    b2c = [int(x) for x in request.form.getlist("b2c")]
-    if file.filename != "":
-        file.save(WORKING_PATH + file.filename)
+    try:
+        file = request.files['encoded_file']
+        b2c = [int(x) for x in request.form.getlist("b2c")]
+        if file.filename != "":
+            file.save(WORKING_PATH + file.filename)
 
-        file_extension = os.path.splitext(file.filename)[1]
-        if file_extension == ".png" or file_extension == ".bmp":
-            payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
-            session["payload"] = payload
-            session["image"] = file.filename
-        elif file_extension == ".wav":
-            payload = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).decode()
-            session["payload"] = payload
-            session["wav"] = file.filename
-        elif file_extension == ".txt":
-            payload = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).decode()
-            session["payload"] = payload
-            session["txt"] = file.filename
+            file_extension = os.path.splitext(file.filename)[1]
+            if file_extension == ".png" or file_extension == ".bmp":
+                payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
+                session["payload"] = payload
+                session["image"] = file.filename
+            elif file_extension == ".wav":
+                payload = wav_steg.wav_steg(WORKING_PATH + file.filename, b2c).decode()
+                session["payload"] = payload
+                session["wav"] = file.filename
+            elif file_extension == ".txt":
+                payload = txt_steg.txt_steg(WORKING_PATH + file.filename, b2c).decode()
+                session["payload"] = payload
+                session["txt"] = file.filename
 
-    return redirect("/decode_result")
+        return redirect("/decode_result")
+    except:
+        return redirect("/unsupported")
 
 @app.route('/decode_result')
 def decode_result():
@@ -103,6 +109,10 @@ def decode_result():
         return render_template("decode_result.html")
     else:
         return redirect("/decode")
+
+@app.route('/unsupported')
+def unsupported():
+    return render_template('unsupported.html')
 
 @app.route('/get_session')
 def get_session():

@@ -8,6 +8,7 @@
     <title>RESULT</title>
 </head>
 <body>
+    <a style="text-decoration: none; color: white; display: inline-block; padding: 14px 16px; background-color: gray;" href="/decode">< Back</a>
 </body>
 <script>
 
@@ -16,29 +17,29 @@
         $.get('/get_session', function(response) {
             if(response.hasOwnProperty("image")){
                 console.log(response)
-                var html_content = `<section>
-                    <div>
-                        <h1>Decoded</h1>
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; text-align:center;">
+                    <div style="width:100%; height:100%; text-align:center;">
+                        <h1 style="height:15%; width:90%; padding: 5%">Decoded</h1>
                         <img src="upload/` + response["image"] + `" alt="Image Not Found">
                     </div>
-                    <div>
-                        <h1>Secret Text:</h1>
-                        <p>` + response["payload"] + `</p>
+                    <div style="width:100%; height:100%; text-align:center;">
+                        <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
+                        <p style="color: red">` + response["payload"] + `</p>
                     </div>
                 </section>`
                 $("body").append(html_content)
             }
             else if(response.hasOwnProperty("wav")){
-                var html_content = `<section>
-                <h1>Decoded</h1>
-                <audio controls>
-                    <source src="upload/` + response["wav"] + `" type="audio/wav">
-                    Your browser does not support the audio element.
-                </audio>
-                <div>
-                    <h1>Secret Text:</h1>
-                    <p>` + response["payload"] + `</p>
-                </div>
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Decoded</h1>
+                    <audio controls>
+                        <source src="upload/` + response["wav"] + `" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div>
+                        <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
+                        <p>` + response["payload"] + `</p>
+                    </div>
                 </section>`
                 $("body").append(html_content)
             }
@@ -46,13 +47,13 @@
                 fetch("upload/" + response["txt"])
                     .then(res => res.text())
                     .then(data => {
-                        var html_content = `<section>
-                            <div>
-                                <h1>Decoded</h1>
-                                <textarea>` + data + `</textarea>
+                        var html_content = `<section style="margin: 100px auto; width:50%; height:50%; text-align:center;">
+                            <div style="width:100%; height:100%; text-align:center;">
+                                <h1 style="height:15%; width:90%; padding: 5%">Decoded</h1>
+                                <textarea style="height:75%; width:90%; padding: 5%">` + data + `</textarea>
                             </div>
-                            <div>
-                                <h1>Secret Text:</h1>
+                            <div style="width:100%; height:100%; text-align:center;">
+                                <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
                                 <p>` + response["payload"] + `</p>
                             </div>
                         </section>`

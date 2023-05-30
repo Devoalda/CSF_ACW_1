@@ -6,8 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>RESULT</title>
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+
+        html, body{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
+    <a style="text-decoration: none; color: white; display: inline-block; padding: 14px 16px; background-color: gray;" href="/encode">< Back</a>
 </body>
 <script>
 
@@ -16,13 +28,13 @@
         $.get('/get_session', function(response) {
             if(response.hasOwnProperty("image")){
                 console.log(response)
-                var html_content = `<section style="display: flex; justify-content: flex-start;">
-                    <div>
-                        <h1>Original</h1>
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
+                    <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                        <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
                         <img src="upload/` + response["image"] + `" alt="Image Not Found">
                     </div>
-                    <div>
-                        <h1>Encoded</h1>
+                    <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                        <h1 style="height:15%; width:90%; padding: 5%">Encoded</h1>
                         <img src="upload/` + response["image2"] + `" alt="Image Not Found">
                     </div>
 
@@ -30,16 +42,16 @@
                 $("body").append(html_content)
             }
             else if(response.hasOwnProperty("wav")){
-                var html_content = `<section style="display: flex; justify-content: flex-start;">
-                <div>
-                    <h1>Original</h1>
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
+                    <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
                     <audio controls>
                         <source src="upload/` + response["wav"] + `" type="audio/wav">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
-                <div>
-                    <h1>Encoded</h1>
+                <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Encoded</h1>
                     <audio controls>
                         <source src="upload/` + response["wav2"] + `" type="audio/wav">
                         Your browser does not support the audio element.
@@ -56,14 +68,14 @@
                         fetch("upload/" + response["txt2"])
                         .then(res2 => res2.text())
                         .then(data2 => {
-                            var html_content = `<section style="display: flex; justify-content: flex-start;">
-                                <div>
-                                    <h1>Original</h1>
-                                    <textarea>` + data + `</textarea>
+                            var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
+                                <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                                    <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
+                                    <textarea style="height:77%; width:100%">` + data + `</textarea>
                                 </div>
-                                <div>
-                                    <h1>Encoded</h1>
-                                    <textarea>` + data2 + `</textarea>
+                                <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                                    <h1 style="height:15%; width:90%; padding: 5%">Encoded</h1>
+                                    <textarea style="height:77%; width:100%">` + data2 + `</textarea>
                                 </div>
 
                             </section>`
