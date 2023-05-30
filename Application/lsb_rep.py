@@ -4,10 +4,7 @@ import cv2
 import os
 import sys
 
-script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
-current_directory = os.getcwd()
-
-WORKING_PATH = os.path.relpath(script_directory, current_directory)
+WORKING_PATH = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "upload") + os.sep
 
 app = Flask(__name__, template_folder='views')
 app.secret_key = 'b3a5e8d11fb3d8d3647b6cf2e51ad768'
@@ -30,7 +27,8 @@ def encode():
 @app.route("/encoding", methods=['POST'])
 def encoding():
     file = request.files['origin']
-    b2c = [int(request.form['b2c'])]
+    b2c = [int(x) for x in request.form.getlist("b2c")]
+    # b2c = [int(request.form['b2c'])]
     payload = request.form['payload']
 
     if file.filename != "":
@@ -56,7 +54,9 @@ def decode():
 @app.route("/decoding", methods=['POST'])
 def decoding():
     file = request.files['encoded_file']
-    b2c = [int(request.form['b2c'])]
+    b2c = [int(x) for x in request.form.getlist("b2c")]
+    # b2c = [int(request.form['b2c'])]
+    print(b2c)
     if file.filename != "":
         file.save(WORKING_PATH + file.filename)
         payload = img_steg.img_steg(WORKING_PATH + file.filename, b2c).decode()
