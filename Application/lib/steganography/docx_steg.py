@@ -1,7 +1,8 @@
 import numpy as np
-from pprint import pprint
 
-
+##################################################
+# Duplicate of file_steg.py, to remove           #
+##################################################
 class docx_steg:
     def __init__(self, docx_file: str = "testfile.docx", bits_to_hide: list[int] = None) -> None:
         """
@@ -11,6 +12,7 @@ class docx_steg:
         :param bits_to_hide: Bit to hide the data in (1 - LSB to 8 - MSB)
         :type bits_to_hide: list[int]
         """
+        raise NotImplementedError("Duplicate of file_steg.py, to remove")
         self.docx_file = docx_file
         self.bits_to_hide = [8 - bit_pos for bit_pos in bits_to_hide] if bits_to_hide else [1]  # Default is LSB
         self.delimiter = "====="  # Delimiter to indicate the end of the secret data
