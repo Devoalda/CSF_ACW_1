@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESULT</title>
+</head>
+<body>
+    
+    <section style="display: flex; justify-content: flex-start;">
+
+        <div>
+            <h1>Original</h1>
+            <img src="{{ url_for('upload', filename=image2) }}" alt="Image Not Found">
+        </div>
+        <div>
+            <h1>Encoded</h1>
+            <img src="{{ url_for('upload', filename=image2) }}" alt="Image Not Found">
+        </div>
+
+    </section>
+
+</body>
+</html>
