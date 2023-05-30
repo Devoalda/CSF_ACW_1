@@ -90,6 +90,16 @@
                         console.error('Error:', error);
                     });
             }
+            else if(response.hasOwnProperty("document")){
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; text-align:center;">
+                    <div style="width:100%; height:100%; text-align:center;">
+                        <a href="upload/` + response["document"] + `" download>Download Document</a>
+                        <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
+                        <p style="color: red">` + response["payload"] + `</p>
+                    </div>
+                </section>`
+                $("body").append(html_content)
+            }
         });
     })
 

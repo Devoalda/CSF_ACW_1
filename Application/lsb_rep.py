@@ -38,7 +38,7 @@ def encoding():
             file.save(WORKING_PATH + file.filename)
 
             file_extension = os.path.splitext(file.filename)[1][1:]
-            if file_extension == "png" or file_extension == "bmp":
+            if file_extension in ["bmp", "png"]:
                 encode = img_steg.img_steg(WORKING_PATH + file.filename, b2c).encode(payload)
                 cv2.imwrite(WORKING_PATH + "encoded_" + file.filename, encode)
                 session['image'] = file.filename
@@ -61,10 +61,12 @@ def encoding():
                     f.write(encoded_data)
                 session['txt'] = file.filename
                 session['txt2'] = "encoded_" + file.filename
-            elif file_extension == "mp3" or file_extension == "mp4":
+            elif file_extension in ["mp3", "mp4", "docx", "xlsx", "pptx"]:
                 encoded_data = file_steg.file_steg(WORKING_PATH + file.filename, b2c).encode(payload)
                 with open(os.path.join(WORKING_PATH, "encoded_" + file.filename), "wb") as f:
                     f.write(encoded_data)
+                if file_extension in ["docx", "xlsx", "pptx"]:
+                    file_extension = "document"
                 session[file_extension] = file.filename
                 session[file_extension + '_2'] = "encoded_" + file.filename
 
@@ -98,6 +100,8 @@ def decoding():
 
         if class_name_str == "img_steg":
             session["image"] = file.filename
+        elif ext in ["docx", "pptx", "xlsx"]:
+            session["document"] = file.filename
         else:
             session[ext] = file.filename
 
@@ -110,19 +114,18 @@ def decoding():
         file = request.files['encoded_file']
         b2c = [int(x) for x in request.form.getlist("b2c")]
         if file.filename != "":
-
             _path = WORKING_PATH + file.filename
 
             file.save(_path)
 
             file_extension = os.path.splitext(file.filename)[1][1:]
-            if file_extension == "png" or file_extension == "bmp":
+            if file_extension in ["bmp", "png"]:
                 decode_files(img_steg, _path, b2c, file_extension)
             elif file_extension == "wav":
                 decode_files(wav_steg, _path, b2c, file_extension)
             elif file_extension == "txt":
                 decode_files(txt_steg, _path, b2c, file_extension)
-            elif file_extension == "mp3" or file_extension == "mp4":
+            elif file_extension in ["mp3", "mp4", "docx", "xlsx", "pptx"]:
                 decode_files(file_steg, _path, b2c, file_extension)
 
         return redirect("/decode_result")

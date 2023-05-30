@@ -96,6 +96,20 @@
                 </section>`
                 $("body").append(html_content)
             }
+            else if(response.hasOwnProperty("docx")){
+
+                var html_content = `<section style="margin: 100px auto; width:50%; height:50%; display: flex; justify-content: space-between;">
+                    <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Original</h1>
+                    <a href="upload/` + response["document"] + `" download>Download Document</a>
+                </div>
+                <div style="border: 1px solid black; width:100%; height:100%; text-align:center;">
+                    <h1 style="height:15%; width:90%; padding: 5%">Encoded</h1>
+                    <a href="upload/` + response["document_2"] + `" download>Download Document</a>
+                </div>
+                </section>`
+                $("body").append(html_content)
+            }
             else if(response.hasOwnProperty("txt")){
                 
                 fetch("upload/" + response["txt"])
