@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request, redirect, session, send_from_directory
 from lib.steganography import img_steg
 import cv2
+import os
+import sys
 
-WORKING_PATH = 'Application/upload/'
+script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
+current_directory = os.getcwd()
+
+WORKING_PATH = os.path.relpath(script_directory, current_directory)
 
 app = Flask(__name__, template_folder='views')
 app.secret_key = 'b3a5e8d11fb3d8d3647b6cf2e51ad768'
