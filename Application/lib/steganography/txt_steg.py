@@ -11,7 +11,7 @@ class txt_steg:
         :type bit_to_hide: list[int]
         """
         self.text_file = text_file  # PathName of the text file
-        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [1]  # Default is LSB
+        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [7]  #Each bit value converted to index (e.g. bit 2 -> 6), Default is LSB (index = 7)
         self.delimiter = "abc-123=="  # Delimiter to indicate the end of the secret data
 
     def encode(self, secret_data: str = "Hello World") -> str:
@@ -30,13 +30,13 @@ class txt_steg:
 
         secret_data += self.delimiter  # Add delimiter
 
-        # Max Bytes to encode
-        n_bytes = len(data) // 8
+        # Max Bits to encode (1 Character = 8 bits)
+        n_bits = len(data) * len(self.bit_to_hide) # Bits that can be used (Each character x Number of bits that can be used)
 
         # Check if secret data can be encoded into text file
-        if len(secret_data) > n_bytes:
+        if len(secret_data) * 8 > n_bits:
             raise ValueError(
-                f"[-] Error: Binary Secret data length {len(secret_data)} is greater than data length {n_bytes}")
+                f"[-] Error: Binary Secret data length {len(secret_data)*8} is greater than data length {n_bits}")
 
         data_index = 0
         # Convert secret data to binary
@@ -46,18 +46,18 @@ class txt_steg:
 
         print(f"[+] Starting encoding...")
         # Encode data into text
-        for byte in data:
-            byte = self.to_bin(byte)
-            byte = "0" * (8 - len(byte)) + byte
+        for char in data:
+            bin_char = self.to_bin(char)
+            bin_char = "0" * (8 - len(bin_char)) + bin_char
             if data_index >= len(binary_secret_data):
-                encoded_data += self.from_bin(''.join(byte))
+                encoded_data += self.from_bin(''.join(bin_char))
             else:
                 for bit_pos in self.bit_to_hide:
                     if data_index < len(binary_secret_data):
-                        byte = list(byte)
-                        byte[bit_pos] = binary_secret_data[data_index]
+                        bin_char = list(bin_char)
+                        bin_char[bit_pos] = binary_secret_data[data_index]
                         data_index += 1
-                encoded_data += self.from_bin(''.join(byte))
+                encoded_data += self.from_bin(''.join(bin_char))
 
         print(f"[+] Encoded Successfully!")
         return encoded_data
@@ -79,18 +79,18 @@ class txt_steg:
 
         binary_data = ""
         print(f"[+] Gathering data from bit positions: {self.bit_to_hide}")
-        for byte in data:
-            byte = self.to_bin(byte)
-            byte = "0" * (8 - len(byte)) + byte
+        for char in data:
+            bin_char = self.to_bin(char)
+            bin_char = "0" * (8 - len(bin_char)) + bin_char
             for bit_pos in self.bit_to_hide:
-                binary_data += byte[bit_pos]
+                binary_data += bin_char[bit_pos]
 
         print(f"[+] Converting binary data to text...")
-        all_bytes = [binary_data[i:i + 8] for i in range(0, len(binary_data), 8)]
+        all_chars = [binary_data[i:i + 8] for i in range(0, len(binary_data), 8)]
 
         decoded_data = ""
-        for byte in all_bytes:
-            decoded_data += chr(int(byte, 2))
+        for char in all_chars:
+            decoded_data += chr(int(char, 2))
             if decoded_data[-len(self.delimiter):] == self.delimiter:
                 break
 
