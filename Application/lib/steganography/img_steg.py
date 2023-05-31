@@ -12,7 +12,7 @@ class img_steg:
         :type bit_to_hide: list[int]
         """
         self.image_name = image_name
-        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [1]  # Default is LSB
+        self.bit_to_hide = [8 - bit_pos for bit_pos in bit_to_hide] if bit_to_hide else [7]  # Default is LSB (index = 7)
         self.delimiter = "abc-123-a=="
 
     def encode(self, secret_data: str = "Hello World") -> np.ndarray:
@@ -24,10 +24,13 @@ class img_steg:
         :rtype: np.ndarray
         """
         image = cv2.imread(self.image_name)  # read image
-        n_bytes = image.shape[0] * image.shape[1] * 3 // 8  # Max bytes to encode
-        print("[*] Maximum bytes to encode:", n_bytes)
+        n_bits = (image.shape[0] * image.shape[1] * 3) * 8 * len(self.bit_to_hide)  # Max bits to encode
+        print("[*] Maximum bytes to encode:", n_bits // 8)
+        print("[*] Maximum bits to encode:", n_bits)
+
         secret_data += self.delimiter  # Add delimiter at the end of data
-        if len(secret_data) > n_bytes:
+
+        if len(secret_data)*8 > n_bits:
             raise ValueError("[!] Insufficient bytes, need a bigger image or less data")
         print("[*] Encoding Data...")
 
@@ -37,7 +40,7 @@ class img_steg:
         binary_secret_data = self.to_bin(secret_data)  # Convert data to binary
         data_len = len(binary_secret_data)  # size of data to hide
 
-        print(f"[+] Size of data to hide: {data_len}")
+        print(f"[+] Size of data to hide: {data_len} bits")
         print("[+] Starting encoding...")
 
         for row in image:
