@@ -20,7 +20,8 @@
                 var html_content = `<section style="margin: 100px auto; width:50%; height:50%; text-align:center;">
                     <div style="width:100%; height:100%; text-align:center;">
                         <h1 style="height:15%; width:90%; padding: 5%">Decoded</h1>
-                        <img src="upload/` + response["image"] + `" alt="Image Not Found">
+                        <img src="upload/` + response["image"] + `" alt="Image Not Found" class="result_box">
+                        <a href="upload/` + response["image"] + `" class="result_box_download" download >Download Image</a>
                     </div>
                     <div style="width:100%; height:100%; text-align:center;">
                         <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
@@ -36,6 +37,7 @@
                         <source src="upload/` + response["wav"] + `" type="audio/wav">
                         Your browser does not support the audio element.
                     </audio>
+                    <a href="upload/` + response["wav"] + `" download>Download Audio</a>
                     <div>
                         <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
                         <p style="color: red">` + response["payload"] + `</p>
@@ -50,6 +52,7 @@
                         <source src="upload/` + response["mp3"] + `" type="audio/wav">
                         Your browser does not support the audio element.
                     </audio>
+                    <a href="upload/` + response["mp3"] + `" download>Download Audio</a>
                     <div>
                         <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
                         <p style="color: red">` + response["payload"] + `</p>
@@ -63,6 +66,7 @@
                     <video style="width: 100%" src="upload/` + response["mp4"] + `" controls autoplay>
                         Sorry, your browser doesn't support embedded videos.
                     </video>
+                    <a href="upload/` + response["mp4"] + `" download>Download Video</a>
                     <div>
                         <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
                         <p style="color: red">` + response["payload"] + `</p>
@@ -78,6 +82,7 @@
                             <div style="width:100%; height:100%; text-align:center;">
                                 <h1 style="height:15%; width:90%; padding: 5%">Decoded</h1>
                                 <textarea style="height:75%; width:90%; padding: 5%">` + data + `</textarea>
+                                <a href="upload/` + response["txt"] + `" download>Download Text File</a>
                             </div>
                             <div style="width:100%; height:100%; text-align:center;">
                                 <h1 style="height:15%; width:90%; padding: 5%">Secret Text:</h1>
@@ -101,6 +106,11 @@
                 $("body").append(html_content)
             }
         });
+
+        $(".result_box").on("click", function(){
+
+            $(".result_box_download").click()
+        })
     })
 
 </script>
