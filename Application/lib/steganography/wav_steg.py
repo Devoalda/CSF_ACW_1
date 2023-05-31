@@ -47,11 +47,11 @@ class wav_steg:
         secret_data+=self.delimiter
 
         # Max Bits to encode
-        n_bits = (len(data) // 8) * self.bits_to_hide
+        n_bits = (len(data) // 8) * len(self.bits_to_hide)
 
         # Check if secret data can be encoded into wav file
         # print(f"Secret data length: {len(secret_data)}, Max data length: {n_bytes}")
-        if len(secret_data*8) > n_bits:
+        if len(secret_data)*8 > n_bits:
             raise ValueError(
                 f"[-] Error: Binary Secret data length {len(secret_data)*8} is greater than data length {n_bits}")
 
