@@ -6,14 +6,14 @@ import sys
 import wave
 import warnings
 
-MAX_SESSION_SIZE = 4096 * 2
+MAX_SESSION_SIZE = 4096 * 3
 WORKING_PATH = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "upload") + os.sep
 
 # Supported file extensions
 supported_files = {
     "txt_files": ["txt", "py", "sql", "html", "css", "js", "php", "c", "cpp", "java", "json", "xml", "yml", "md"],
     "gen_files": ["mp3", "mp4"],
-    "doc_files": ["docx", "xlsx", "pptx"],
+    "doc_files": ["docx", "xlsx", "pptx", "csv"],
     "wav_files": ["wav"],
     "image_files": ["bmp", "png"]
 }
