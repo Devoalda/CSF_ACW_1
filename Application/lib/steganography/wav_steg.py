@@ -14,7 +14,7 @@ class wav_steg:
         """
         self.wav_file = wav_file
         self.bits_to_hide = [
-            8 - bit_pos for bit_pos in bits_to_hide] if bits_to_hide else [1]  # Default is LSB
+            8 - bit_pos for bit_pos in bits_to_hide] if bits_to_hide else [7]  # Default is LSB (index = 7)
         self.delimiter = "====="  # Delimiter to indicate the end of the secret data
         print(self.bits_to_hide)
 
@@ -43,20 +43,20 @@ class wav_steg:
         # Read all the audio frames
         data = wav_file.readframes(num_frames)
 
-        # Max Bytes to encode
-        n_bytes = len(data) // 8
+        #Add delimiter
+        secret_data+=self.delimiter
+
+        # Max Bits to encode
+        n_bits = (len(data) // 8) * self.bits_to_hide
 
         # Check if secret data can be encoded into wav file
         # print(f"Secret data length: {len(secret_data)}, Max data length: {n_bytes}")
-        if len(secret_data) > n_bytes:
+        if len(secret_data*8) > n_bits:
             raise ValueError(
-                f"[-] Error: Binary Secret data length {len(secret_data)} is greater than data length {n_bytes}")
+                f"[-] Error: Binary Secret data length {len(secret_data)*8} is greater than data length {n_bits}")
 
         # Convert secret data to binary
         binary_secret_data = self.to_bin(secret_data)
-
-        # Add delimiter
-        binary_secret_data += self.to_bin(self.delimiter)
 
         data_index = 0
         encoded_data = bytearray()
