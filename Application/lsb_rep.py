@@ -13,7 +13,7 @@ WORKING_PATH = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "uplo
 supported_files = {
     "txt_files": ["txt", "py", "sql", "html", "css", "js", "php", "c", "cpp", "java", "json", "xml", "yml", "md"],
     "gen_files": ["mp3", "mp4"],
-    "doc_files": ["docx", "xlsx", "pptx", "csv"],
+    "doc_files": ["docx", "xlsx", "pptx", "csv", "pdf"],
     "wav_files": ["wav"],
     "image_files": ["bmp", "png"]
 }

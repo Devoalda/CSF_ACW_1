@@ -16,7 +16,8 @@ class file_steg:
             "docx",
             "xlsx",
             "csv",
-            "pptx"
+            "pptx",
+            "pdf"
         ]
         if file is None:
             raise ValueError(f"[-] Error: File path is required")
@@ -123,33 +124,6 @@ class file_steg:
 
 def main():
     raise NotImplementedError("This module is not meant to run by itself")
-    # with open("../Txt_Steg/secret_data.txt", "r") as f:
-    #     secret_data = f.read()
-    #
-    # bits_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
-    # bits_to_hide = list(bits_to_hide)
-    # bits_to_hide.sort()
-    # print(f"Bits to hide: {bits_to_hide}")
-    #
-    # mp3_file = "audio.mp3"
-    # mp4_file = "video.mp4"
-    # docx_file = "test.docx"
-    # output_file_mp3 = "encoded_audio.mp3"
-    # output_file_mp4 = "encoded_video.mp4"
-    # output_docx_file = "encoded_test.docx"
-    #
-    # # Encode data, get as bytes
-    # encoded_data = file_steg(file=mp3_file, bit_positions=bits_to_hide).encode(secret_data_str=secret_data)
-    #
-    # # Write encoded data to file
-    # with open(output_file_mp3, "wb") as f:
-    #     f.write(encoded_data)
-    #
-    # # Decode data from mp3 file
-    # decoded_data = file_steg(file=output_file_mp3, bit_positions=bits_to_hide).decode()
-    #
-    # # Print the decoded data
-    # print("[+] Decoded data:", decoded_data)
 
 
 if __name__ == "__main__":

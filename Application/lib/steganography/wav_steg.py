@@ -158,36 +158,4 @@ class wav_steg:
 
 
 if __name__ == "__main__":
-    wav_file = "sample.wav"
-    output_file_wav = "encoded.wav"
-    secret_txt = "payload.txt"
-
-    with open(secret_txt, "r") as f:
-        secret_data = f.read()
-
-    bits_to_hide = np.random.choice(
-        range(1, 9), np.random.randint(1, 9), replace=False)
-    bits_to_hide = list(bits_to_hide)
-    bits_to_hide.sort()
-    bits_to_hide = [1, 2, 3, 4, 5]
-    print(f"Bits to hide: {bits_to_hide}")
-
-    # Encode data, get as bytes
-    encoded_data = wav_steg(wav_file=wav_file, bits_to_hide=bits_to_hide).encode(
-        secret_data=secret_data)
-
-    # Write encoded data to file
-    new_wav_file = wave.open(output_file_wav, "wb")
-    new_wav_file.setnchannels(encoded_data["num_channels"])
-    new_wav_file.setsampwidth(encoded_data["sample_width"])
-    new_wav_file.setframerate(encoded_data["frame_rate"])
-    new_wav_file.writeframes(encoded_data["num_frames"])
-    # Close the New WAV file
-    new_wav_file.close()
-
-    # Decode data from wav file
-    decoded_data = wav_steg(wav_file=output_file_wav,
-                            bits_to_hide=bits_to_hide).decode()
-
-    # Print the decoded data
-    # print("[+] Decoded data:", decoded_data)
+    raise NotImplementedError("This module is not meant to be run as a script")

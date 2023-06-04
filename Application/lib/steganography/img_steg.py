@@ -123,28 +123,6 @@ class img_steg:
 
 def main():
     raise NotImplementedError("This module is not meant to run by itself")
-    # Variables
-    # image_name = "test.bmp"
-    # encoded_image_name = "encoded_image.bmp"
-    # secret_data = ""
-    # # with open("../Txt_Steg/secret_data.txt", "r") as f:
-    # #     secret_data = f.read()
-    #
-    # # Generate random bit positions to hide data into image for testing
-    # bit_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
-    # bit_to_hide = list(bit_to_hide)
-    # bit_to_hide.sort()
-    # print(f"Bits to hide: {bit_to_hide}")
-    #
-    # print("Welcome to Image Steganography")
-    #
-    # # Encode the data into the image
-    # encoded_image = img_steg(image_name=image_name, bit_to_hide=bit_to_hide).encode(secret_data)
-    # cv2.imwrite(encoded_image_name, encoded_image)
-    #
-    # # Decode the data from the image
-    # decoded_data = img_steg(image_name=encoded_image_name, bit_to_hide=bit_to_hide).decode()
-    # print("Decoded Data:", decoded_data)
 
 
 if __name__ == "__main__":

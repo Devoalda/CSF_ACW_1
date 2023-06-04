@@ -118,26 +118,6 @@ class txt_steg:
 
 def main():
     raise NotImplementedError("This module is not meant to run by itself")
-    # print("Welcome to Text Steganography")
-    # text_file_name = "test.txt"
-    # with open("../Txt_Steg/secret_data.txt", "r") as f:
-    #     secret_data = f.read()
-    #
-    # # Create a unique random number list from 1-8, spanning anywhere from 1-8 bits, for testing purposes
-    # bits_to_hide = np.random.choice(range(1, 9), np.random.randint(1, 9), replace=False)
-    # bits_to_hide = list(bits_to_hide)
-    # bits_to_hide.sort()
-    # print(f"Bits to hide: {bits_to_hide}")
-    #
-    # # Encode
-    # encoded_file_name = "encoded_text.txt"
-    # encoded_data = txt_steg(text_file=text_file_name, bit_to_hide=bits_to_hide).encode(secret_data)
-    # with open(f"{encoded_file_name}", "w") as f:
-    #     f.write(encoded_data)
-    #
-    # # Decode
-    # decoded_data = txt_steg(text_file=encoded_file_name, bit_to_hide=bits_to_hide).decode()
-    # print(decoded_data)
 
 
 if __name__ == "__main__":
