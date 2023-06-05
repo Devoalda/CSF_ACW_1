@@ -17,6 +17,9 @@ class file_steg:
             "xlsx",
             "csv",
             "pptx",
+            "jpg",
+            "jpeg",
+            "gif",
             "pdf"
         ]
         if file is None:
